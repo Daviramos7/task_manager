@@ -1,7 +1,9 @@
 <div align="center">
 
-# Sistema de Gestão de Tarefas  
+# Sistema de Gestão de Tarefas
 Um sistema de **To-Do List** com arquitetura **Cliente-Servidor**, desenvolvido em **Python puro** para a disciplina de *Backend Frameworks*.
+
+<img src="assets/demo.png" alt="Demonstração do cliente de terminal" width="700"/>
 
 </div>
 
@@ -23,19 +25,19 @@ Um sistema de **To-Do List** com arquitetura **Cliente-Servidor**, desenvolvido 
 
 O projeto foi construído sobre uma arquitetura **Cliente-Servidor**, garantindo a separação de responsabilidades.
 
-- **Servidor Backend (`backend_server.py`)**:  
+- **Servidor Backend (`backend_server.py`)**:
   Contém a lógica de negócio, processa requisições HTTP e é o único componente com acesso ao banco de dados.
-- **Cliente (`cli_client.py`)**:  
+- **Cliente (`cli_client.py`)**:
   Interface em linha de comando. Comunica com o servidor através da API RESTful.
-- **Banco de Dados (`tarefas.db`)**:  
+- **Banco de Dados (`tarefas.db`)**:
   Base de dados **SQLite** para a persistência dos dados.
 
 ```text
-┌─────────────────┐         HTTP/JSON         ┌─────────────────────┐         SQL          ┌────────────────┐
-│     Cliente     │ ◀───────────────────────▶ │   Servidor Backend  │ ◀──────────────────▶ │ Banco de Dados │
-│ (cli_client.py) │                           │ (backend_server.py) │                      │    (SQLite)    │
-└─────────────────┘                           └─────────────────────┘                      └────────────────┘
-````
+┌─────────────────┐       HTTP/JSON       ┌─────────────────────┐       SQL       ┌────────────────┐
+│     Cliente     │ ◀───────────────────▶ │   Servidor Backend  │ ◀──────────────▶ │ Banco de Dados │
+│ (cli_client.py) │                       │ (backend_server.py) │                  │    (SQLite)    │
+└─────────────────┘                       └─────────────────────┘                  └────────────────┘
+```
 
 ---
 
