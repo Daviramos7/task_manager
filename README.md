@@ -1,133 +1,129 @@
-<div align="center">
+# ✅ Task Manager — API REST de Alta Performance
 
-# Sistema de Gestão de Tarefas
-Um sistema de **To-Do List** com arquitetura **Cliente-Servidor**, desenvolvido em **Python puro** para a disciplina de *Backend Frameworks*.
-
-<img src="assets/demo.png" alt="Demonstração do cliente de terminal" width="700"/>
-
-</div>
+> Servidor HTTP REST + cliente CLI para gestão de tarefas, desenvolvido em **Python puro** — zero dependências externas no servidor.
 
 ---
 
-## 📖 Tabela de Conteúdos
-- [Arquitetura](#️-arquitetura)
-- [Funcionalidades](#-funcionalidades)
-- [Como Executar](#-como-executar)
-  - [Pré-requisitos](#pré-requisitos)
-  - [Instalação Passo a Passo](#instalação-passo-a-passo)
-  - [Executar a Aplicação](#executar-a-aplicação)
-- [Documentação da API](#️-documentação-da-api)
-- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+## ⚡ Performance
+
+| Métrica | Resultado |
+|---|---|
+| Tempo total de resposta (API) | **4,7 ms** |
+| Tempo de consulta (SQL) | **~4 ms** |
+| Tamanho do payload | **136 bytes** |
+| Dependências externas do servidor | **0** |
 
 ---
 
-## 🏛️ Arquitetura
+## 🛠️ Stack
 
-O projeto foi construído sobre uma arquitetura **Cliente-Servidor**, garantindo a separação de responsabilidades.
+![Python](https://img.shields.io/badge/Python_Puro-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 
-- **Servidor Backend (`backend_server.py`)**:
-  Contém a lógica de negócio, processa requisições HTTP e é o único componente com acesso ao banco de dados.
-- **Cliente (`cli_client.py`)**:
-  Interface em linha de comando. Comunica com o servidor através da API RESTful.
-- **Banco de Dados (`tarefas.db`)**:
-  Base de dados **SQLite** para a persistência dos dados.
+**Servidor:** `http.server` · `sqlite3` · `json` · `time` — 100% biblioteca padrão Python
 
-```text
-┌─────────────────┐       HTTP/JSON       ┌─────────────────────┐       SQL       ┌────────────────┐
-│     Cliente     │ ◀───────────────────▶ │   Servidor Backend  │ ◀──────────────▶ │ Banco de Dados │
-│ (cli_client.py) │                       │ (backend_server.py) │                  │    (SQLite)    │
-└─────────────────┘                       └─────────────────────┘                  └────────────────┘
+**Cliente:** `requests`
+
+---
+
+## 📋 Sobre o Projeto
+
+Sistema Cliente-Servidor para gestão de tarefas com API RESTful e interface de linha de comando. O objetivo foi dominar o ciclo completo de uma requisição HTTP — parsing, roteamento, acesso ao banco, serialização e resposta — sem depender de nenhum framework.
+
+O servidor instrumenta cada requisição com métricas separadas de tempo de banco e tempo total de API, permitindo identificar gargalos com precisão.
+
+---
+
+## 🏗️ Arquitetura
+
 ```
+┌─────────────────┐     HTTP/JSON      ┌──────────────────────┐     SQL      ┌──────────────┐
+│     Cliente     │ ◀────────────────▶ │   Servidor Backend   │ ◀──────────▶ │    SQLite    │
+│ (cli_client.py) │                    │ (backend_server.py)  │              │  tarefas.db  │
+└─────────────────┘                    └──────────────────────┘              └──────────────┘
+```
+
+**Servidor (`backend_server.py`)** — lógica de negócio, roteamento manual, acesso exclusivo ao banco. Cada request loga tempo de banco, tempo total e tamanho do payload separadamente.
+
+**Cliente (`cli_client.py`)** — interface CLI com CRUD completo. Comunica com o servidor via HTTP/JSON.
+
+**Banco (`tarefas.db`)** — SQLite com `row_factory = sqlite3.Row` para retorno de linhas como dicionários.
+
+---
+
+## 🔧 Decisões Técnicas
+
+**Zero dependências no servidor**
+Uso exclusivo da biblioteca padrão do Python (`http.server`, `sqlite3`). A decisão força o entendimento do ciclo completo de uma requisição HTTP sem abstração de framework.
+
+**Instrumentação de performance separada**
+O `log_performance()` mede o tempo de banco (`db_time`) separado do tempo total da API (`total_time`). Isso permite identificar se o gargalo está no SQL ou no overhead da aplicação — padrão de observabilidade de sistemas em produção.
+
+**`sqlite3.Row` como row_factory**
+Converte automaticamente rows do SQLite em objetos acessíveis por nome de coluna, eliminando mapeamento manual e permitindo serialização direta para dict/JSON.
+
+---
+
+## ↔️ Endpoints da API
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `POST` | `/tasks` | Cria uma nova tarefa |
+| `GET` | `/tasks` | Lista todas as tarefas |
+| `GET` | `/tasks/<id>` | Retorna uma tarefa por ID |
+| `PUT` | `/tasks/<id>` | Atualiza uma tarefa |
+| `DELETE` | `/tasks/<id>` | Remove uma tarefa |
 
 ---
 
 ## ✨ Funcionalidades
 
-* [x] Criar uma nova tarefa.
-* [x] Listar todas as tarefas existentes.
-* [x] Visualizar os detalhes de uma tarefa específica por ID.
-* [x] Atualizar o título, descrição e estado de uma tarefa.
-* [x] Eliminar uma tarefa do sistema.
+- CRUD completo de tarefas via CLI
+- Persistência em SQLite com timestamp automático de criação
+- Status de tarefa: `pendente` / `completo`
+- Log de performance por requisição no terminal do servidor
 
 ---
 
 ## 🚀 Como Executar
 
-Siga estas instruções para configurar e executar o projeto no seu ambiente local.
-
-### Pré-requisitos
-
-* Python 3
-* SQLite 3
-
-### Instalação Passo a Passo
-
-**1. Criar e Ativar um Ambiente Virtual**
-
-```bash
-# Criar o ambiente
-python -m venv venv
-
-# Ativar (Windows)
-.\venv\Scripts\activate
-
-# Ativar (Linux/macOS)
-source venv/bin/activate
-```
-
-**2. Instalar Dependências**
-
-```bash
-pip install requests
-```
-
-**3. Configurar o Banco de Dados**
-
+**1. Configurar o banco**
 ```bash
 sqlite3 tarefas.db < database_setup.sql
 ```
 
-### Executar a Aplicação
-
-A aplicação requer **dois terminais** em execução simultânea:
-
-**Terminal 1 - Servidor ⚙️**
-
+**2. Terminal 1 — Servidor**
 ```bash
 python backend_server.py
 ```
 
-Mantenha este terminal aberto para o servidor escutar as requisições.
-
-**Terminal 2 - Cliente 🖥️**
-
+**3. Terminal 2 — Cliente**
 ```bash
+pip install requests
 python cli_client.py
 ```
 
-Use este terminal para interagir com o sistema.
+---
+
+## 📁 Estrutura
+
+```
+task_manager/
+│
+├── backend_server.py     # Servidor HTTP REST (Python puro)
+├── cli_client.py         # Cliente CLI com CRUD completo
+├── database_setup.sql    # Schema do banco SQLite
+├── tarefas.db            # Banco de dados gerado
+└── assets/
+    └── demo.png
+```
 
 ---
 
-## ↔️ Documentação da API
+## 📄 Licença
 
-O servidor expõe os seguintes endpoints:
-
-| Verbo HTTP | Rota               | Descrição                         |
-| ---------- | ------------------ | --------------------------------- |
-| POST       | `/tasks`           | Cria uma nova tarefa              |
-| GET        | `/tasks`           | Retorna todas as tarefas          |
-| GET        | `/tasks/<task_id>` | Retorna os detalhes de uma tarefa |
-| PUT        | `/tasks/<task_id>` | Atualiza uma tarefa existente     |
-| DELETE     | `/tasks/<task_id>` | Elimina uma tarefa                |
+Copyright © 2026 por Davi Ramos Ferreira. Todos os Direitos Reservados.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
-
-* **Linguagem**: Python 3
-* **Servidor**: `http.server` (biblioteca padrão do Python)
-* **Cliente**: `requests`
-* **Banco de Dados**: SQLite 3
-
----
+**Desenvolvido com 💙 por [Davi Ramos Ferreira](https://github.com/Daviramos7)**
